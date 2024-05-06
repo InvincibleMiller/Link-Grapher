@@ -21,6 +21,8 @@ import Lo from "lodash";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
 
+import { cachePage, getCachedPage } from "@/lib/localCache";
+
 type Props = {
   // searchParams: { [key: string]: string | string[] | undefined };
 };
@@ -58,7 +60,7 @@ const getLayoutedElements = (
   };
 };
 
-const nodeColor = (node) => {
+const nodeColor = (node: FlowNode) => {
   switch (node.type) {
     default:
       return "#ff0072";
@@ -90,6 +92,15 @@ const Graph = ({}: Props) => {
       const { href } = new URL(url);
       setURL(href);
 
+      const cachedPage = getCachedPage(href);
+
+      console.log(cachedPage);
+
+      if (cachedPage) {
+        setData(cachedPage);
+        return;
+      }
+
       const endPoint = `${
         process.env.NEXT_PUBLIC_BACKEND_ENDPOINT || ""
       }/graph-links`;
@@ -97,6 +108,7 @@ const Graph = ({}: Props) => {
       const result = await axios.get(`${endPoint}?baseURL=${href}`);
 
       setData(await result?.data);
+      cachePage(href, result?.data);
     } catch (error) {
       console.log(error);
     } finally {
