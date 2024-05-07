@@ -46,7 +46,7 @@ const IndexBar = ({
       <input
         type="text"
         onChange={(e) => setURL(e.target.value)}
-        className="text-gray-600 text-xl flex-1 p-4 border-none"
+        className="text-gray-600 text-xl flex-1 p-4 border-none overflow-x-scroll"
       />
       <button
         type="submit"

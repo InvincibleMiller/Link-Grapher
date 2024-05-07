@@ -1,4 +1,5 @@
 import IndexBar from "@/components/IndexBar";
+import RecentSearchList from "@/components/RecentSearchList";
 import Logo from "@/components/Logo";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
             </h1>
           </div>
           <IndexBar />
+          <RecentSearchList className="mt-4" />
         </div>
       </main>
       <footer className="">

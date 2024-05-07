@@ -24,6 +24,8 @@ import ErrorMessage from "@/components/ErrorMessage";
 
 import { cachePage, getCachedPage } from "@/lib/localCache";
 
+import { addSearchToCache } from "@/lib/localCache";
+
 type Props = {
   // searchParams: { [key: string]: string | string[] | undefined };
 };
@@ -120,6 +122,8 @@ const Graph = ({}: Props) => {
       console.log("reloaded");
 
       cachePage(href, result?.data);
+
+      addSearchToCache(href);
     } catch (error) {
       console.log(error);
       setErrorMessage(error?.message || "Cannot load page");
