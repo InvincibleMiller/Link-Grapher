@@ -8,15 +8,13 @@ import Button from "@/components/Button";
 import useLocalCache from "@/lib/localCache";
 import { MouseEventHandler } from "react";
 
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 
-const layout = ({
+const GraphLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const router = useRouter();
-
   const clearCacheAndRefresh: MouseEventHandler = (e) => {
     e.preventDefault();
     useLocalCache.getState().clearCache();
@@ -26,27 +24,29 @@ const layout = ({
 
   return (
     <ReactFlowProvider>
-      <body className="m-0 bg-gray-50 min-h-[100vh] flex flex-row flex-nowrap">
-        <header className="z-[100] bg-blue-100/75 p-4 flex flex-col w-[300px] border-r-2 border-blue-600/25">
-          <Logo />
-          <Button
-            icon={reloadIcon}
-            title="Refresh Page"
-            className="mt-4"
-            onPress={() => window.location.reload()}
-            fullWidth
-          />
-          <Button
-            icon={clearIcon}
-            style="outlined"
-            title="Clear Cache"
-            className="mt-4"
-            onPress={clearCacheAndRefresh}
-            fullWidth
-          />
-        </header>
-        <>{children}</>
-      </body>
+      <Suspense>
+        <body className="m-0 bg-gray-50 min-h-[100vh] flex flex-row flex-nowrap">
+          <header className="z-[100] bg-blue-100/75 p-4 flex flex-col w-[300px] border-r-2 border-blue-600/25">
+            <Logo />
+            <Button
+              icon={reloadIcon}
+              title="Refresh Page"
+              className="mt-4"
+              onPress={() => window.location.reload()}
+              fullWidth
+            />
+            <Button
+              icon={clearIcon}
+              style="outlined"
+              title="Clear Cache"
+              className="mt-4"
+              onPress={clearCacheAndRefresh}
+              fullWidth
+            />
+          </header>
+          <>{children}</>
+        </body>
+      </Suspense>
     </ReactFlowProvider>
   );
 };
@@ -85,4 +85,4 @@ const clearIcon = (
   </svg>
 );
 
-export default layout;
+export default GraphLayout;

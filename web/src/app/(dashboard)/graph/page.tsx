@@ -1,7 +1,7 @@
 "use client";
 
 import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import Dagre from "@dagrejs/dagre";
@@ -73,8 +73,6 @@ const nodeColor = (node: FlowNode) => {
 const Graph = ({}: Props) => {
   const { fitView } = useReactFlow();
 
-  const router = useRouter();
-
   const searchParams = useSearchParams();
   const [url, setURL] = useState<string | undefined>(
     searchParams.get("url") || undefined
@@ -124,7 +122,7 @@ const Graph = ({}: Props) => {
       cachePage(href, result?.data);
 
       addSearchToCache(href);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
       setErrorMessage(error?.message || "Cannot load page");
     } finally {
