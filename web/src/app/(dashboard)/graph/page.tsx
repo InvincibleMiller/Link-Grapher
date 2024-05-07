@@ -1,8 +1,8 @@
 "use client";
 
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import Dagre from "@dagrejs/dagre";
 import ReactFlow, {
@@ -20,6 +20,7 @@ import "reactflow/dist/style.css";
 import Lo from "lodash";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
+import ErrorMessage from "@/components/ErrorMessage";
 
 import { cachePage, getCachedPage } from "@/lib/localCache";
 
@@ -70,18 +71,25 @@ const nodeColor = (node: FlowNode) => {
 const Graph = ({}: Props) => {
   const { fitView } = useReactFlow();
 
+  const router = useRouter();
+
   const searchParams = useSearchParams();
   const [url, setURL] = useState<string | undefined>(
-    searchParams.get("url") || ""
+    searchParams.get("url") || undefined
   );
 
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [data, setData] = useState<{ pages: PageChildren; graph: any } | null>(
     null
   );
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const reload = (url: string) => {
+    window.location.assign(`/graph?url=${url}`);
+  };
 
   const loadGraph = async (): Promise<any | null> => {
     try {
@@ -107,10 +115,14 @@ const Graph = ({}: Props) => {
 
       const result = await axios.get(`${endPoint}?baseURL=${href}`);
 
-      setData(await result?.data);
+      setData(result?.data);
+
+      console.log("reloaded");
+
       cachePage(href, result?.data);
     } catch (error) {
       console.log(error);
+      setErrorMessage(error?.message || "Cannot load page");
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +130,7 @@ const Graph = ({}: Props) => {
 
   useEffect(() => {
     loadGraph();
-  }, [searchParams]);
+  }, [url]);
 
   useEffect(() => {
     if (data === null) return;
@@ -220,12 +232,15 @@ const Graph = ({}: Props) => {
 
   return (
     // bg-gray-950
-    <main className="flex justify-center items-center h-[100vh] p-0 relative">
+    <main className="flex justify-center items-center h-[100vh] p-0 relative flex-1">
       <div className="absolute flex inset-0 items-center justify-center">
         <LoadingSpinner
           isLoading={isLoading}
           message="This could take up to 2 minutes..."
         />
+      </div>
+      <div className="absolute flex inset-0 items-center justify-center">
+        <ErrorMessage message={errorMessage} customSubmit={reload} />
       </div>
       <ReactFlow
         proOptions={{ hideAttribution: true }}
@@ -234,6 +249,7 @@ const Graph = ({}: Props) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         fitView
+        className="flex-grow"
       >
         <MiniMap {...{ nodeColor }} zoomable pannable />
         <Background />
