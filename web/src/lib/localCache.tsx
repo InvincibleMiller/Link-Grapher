@@ -35,7 +35,7 @@ const useLocalCache = create<LocalCache>()(
     }),
     {
       name: "_L_G_local_storage",
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      storage: createJSONStorage(() => localStorage), // (optional) by default, 'localStorage' is used
     }
   )
 );
