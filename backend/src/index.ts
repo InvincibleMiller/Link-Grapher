@@ -14,7 +14,10 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: process.env.FRONT_END_DOMAIN || "http://localhost:3000",
+    origin: [
+      process.env.FRONT_END_DOMAIN || "http://localhost:3000",
+      "https://link-grapher.onrender.com/",
+    ],
   })
 );
 
